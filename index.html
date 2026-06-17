@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Micro-learning Content Factory — Christian Rojas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <span class="nav-brand">Christian Rojas <span class="nav-dot">·</span> Learning Architect</span>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+      <span class="theme-icon">◐</span>
+    </button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-eyebrow">Case Study 01</div>
+    <h1 class="hero-title">Micro-learning<br><em>Content Factory</em></h1>
+    <p class="hero-desc">An autonomous pedagogical agent that transforms raw topic data into structured video scripts — built on Gagné's 9 Events of Instruction, orchestrated with n8n and Google Gemini.</p>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">80%</span>
+        <span class="stat-label">less production time</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-num">9/9</span>
+        <span class="stat-label">Gagné events covered</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-num">100%</span>
+        <span class="stat-label">stylistic consistency</span>
+      </div>
+    </div>
+    <button class="btn-primary" id="ctaBtn">Generate a script →</button>
+  </section>
+
+  <!-- ARCHITECTURE STRIP -->
+  <section class="arch-strip">
+    <div class="arch-flow">
+      <span class="arch-node">Instructional Form</span>
+      <span class="arch-arrow">→</span>
+      <span class="arch-node">n8n Webhook</span>
+      <span class="arch-arrow">→</span>
+      <span class="arch-node">Gemini LLM Chain</span>
+      <span class="arch-arrow">→</span>
+      <span class="arch-node">Gagné Validator</span>
+      <span class="arch-arrow">→</span>
+      <span class="arch-node arch-node--active">Script Output</span>
+    </div>
+  </section>
+
+  <!-- FORM SECTION -->
+  <section class="section" id="formSection" style="display:none;">
+    <div class="section-inner">
+      <div class="section-header">
+        <div class="section-eyebrow">Step 1 of 1</div>
+        <h2 class="section-title">Define your learning context</h2>
+        <p class="section-subtitle">These inputs are not a generic form — each dimension directly shapes the pedagogical structure of the generated script.</p>
+      </div>
+
+      <form class="form" id="scriptForm" novalidate>
+
+        <div class="field">
+          <label class="field-label" for="topic">Central topic</label>
+          <p class="field-hint">The core concept the learner must understand. Be specific — "phishing attacks" over "cybersecurity".</p>
+          <input class="field-input" type="text" id="topic" name="topic" placeholder="e.g. Emotional Intelligence in the workplace" required />
+        </div>
+
+        <div class="field">
+          <label class="field-label">Audience expertise level</label>
+          <p class="field-hint">Determines cognitive load calibration and the complexity of examples used throughout the script.</p>
+          <div class="radio-group">
+            <label class="radio-card">
+              <input type="radio" name="audience_level" value="Beginner" required />
+              <span class="radio-label">Beginner</span>
+              <span class="radio-desc">No prior knowledge assumed</span>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="audience_level" value="Intermediate" />
+              <span class="radio-label">Intermediate</span>
+              <span class="radio-desc">Familiar with the domain</span>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="audience_level" value="Expert" />
+              <span class="radio-label">Expert</span>
+              <span class="radio-desc">Deep practitioner knowledge</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="learning_objective">Learning objective</label>
+          <p class="field-hint">Write it as a behavioral outcome using a Bloom's verb — this becomes the Gagné Event 2 anchor of the script.</p>
+          <input class="field-input" type="text" id="learning_objective" name="learning_objective" placeholder="e.g. Identify the 3 most common phishing techniques" required />
+        </div>
+
+        <div class="field">
+          <label class="field-label">Communication tone</label>
+          <p class="field-hint">Shapes sentence structure, vocabulary register, and the emotional arc of the narrative.</p>
+          <div class="radio-group">
+            <label class="radio-card">
+              <input type="radio" name="communication_tone" value="Professional" required />
+              <span class="radio-label">Professional</span>
+              <span class="radio-desc">Formal, authoritative</span>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="communication_tone" value="Close/Casual" />
+              <span class="radio-label">Close / Casual</span>
+              <span class="radio-desc">Conversational, warm</span>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="communication_tone" value="Inspirational" />
+              <span class="radio-label">Inspirational</span>
+              <span class="radio-desc">Motivational, energetic</span>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="communication_tone" value="Technical" />
+              <span class="radio-label">Technical</span>
+              <span class="radio-desc">Precise, data-driven</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="script_language">Script language</label>
+          <p class="field-hint">The entire output — including Gagné section headers and visual cues — will be generated in this language.</p>
+          <input class="field-input" type="text" id="script_language" name="script_language" placeholder="e.g. Spanish, English, Portuguese" required />
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-ghost" id="cancelBtn">Cancel</button>
+          <button type="submit" class="btn-primary" id="submitBtn">Generate script →</button>
+        </div>
+
+      </form>
+    </div>
+  </section>
+
+  <!-- PROGRESS SECTION -->
+  <section class="section" id="progressSection" style="display:none;">
+    <div class="section-inner section-inner--narrow">
+      <div class="section-header">
+        <h2 class="section-title">Orchestrating your script</h2>
+        <p class="section-subtitle">Watch the pipeline execute in real time.</p>
+      </div>
+      <div class="pipeline">
+        <div class="pipeline-step" id="step-webhook">
+          <div class="step-indicator"></div>
+          <div class="step-content">
+            <span class="step-name">Webhook received</span>
+            <span class="step-desc">Form data dispatched to n8n</span>
+          </div>
+        </div>
+        <div class="pipeline-step" id="step-supabase-create">
+          <div class="step-indicator"></div>
+          <div class="step-content">
+            <span class="step-name">Session registered</span>
+            <span class="step-desc">Record created in Supabase</span>
+          </div>
+        </div>
+        <div class="pipeline-step" id="step-agent">
+          <div class="step-indicator"></div>
+          <div class="step-content">
+            <span class="step-name">Pedagogical agent running</span>
+            <span class="step-desc">AI Agent processing with Gemini</span>
+          </div>
+        </div>
+        <div class="pipeline-step" id="step-gagne">
+          <div class="step-indicator"></div>
+          <div class="step-content">
+            <span class="step-name">Applying Gagné structure</span>
+            <span class="step-desc">9 Events of Instruction mapped</span>
+          </div>
+        </div>
+        <div class="pipeline-step" id="step-complete">
+          <div class="step-indicator"></div>
+          <div class="step-content">
+            <span class="step-name">Script complete</span>
+            <span class="step-desc">Output saved and ready</span>
+          </div>
+        </div>
+      </div>
+      <div class="timer-display" id="timerDisplay">
+        <span class="timer-num" id="timerNum">0.0</span>
+        <span class="timer-label">seconds elapsed</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- OUTPUT SECTION -->
+  <section class="section" id="outputSection" style="display:none;">
+    <div class="section-inner">
+      <div class="output-header">
+        <div>
+          <div class="section-eyebrow">Generated script</div>
+          <h2 class="section-title" id="outputTitle">—</h2>
+        </div>
+        <div class="output-meta">
+          <span class="meta-badge" id="outputTime">— sec</span>
+          <span class="meta-badge meta-badge--purple">9/9 Gagné Events</span>
+        </div>
+      </div>
+
+      <div class="gagne-grid" id="gagneGrid"></div>
+
+      <div class="output-actions">
+        <button class="btn-ghost" id="newScriptBtn">Generate another →</button>
+        <button class="btn-ghost" id="viewGalleryBtn">View gallery →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY SECTION -->
+  <section class="section" id="gallerySection">
+    <div class="section-inner">
+      <div class="section-header">
+        <div class="section-eyebrow">Script gallery</div>
+        <h2 class="section-title">Previously generated scripts</h2>
+        <p class="section-subtitle">Each script was produced by the same orchestration pipeline — demonstrating consistent output at scale.</p>
+      </div>
+      <div class="gallery-grid" id="galleryGrid">
+        <div class="gallery-loading">Loading scripts from Supabase…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <span>Built by Christian Rojas · Learning Architect</span>
+    <span class="footer-stack">n8n · Google Gemini · Supabase · GitHub Pages</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
