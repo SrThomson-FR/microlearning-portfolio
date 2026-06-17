@@ -409,7 +409,11 @@ function parseScriptContent(raw) {
   const isBase64 = /^[A-Za-z0-9+/]+=*$/.test(raw.trim()) && !raw.trim().startsWith('{');
   if (isBase64) {
     try {
-      const decoded = atob(raw.trim());
+      const decoded = decodeURIComponent(
+        atob(raw.trim()).split('').map(c =>
+          '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        ).join('')
+      );
       return JSON.parse(decoded);
     } catch {
       // Fall through to plain JSON parse
