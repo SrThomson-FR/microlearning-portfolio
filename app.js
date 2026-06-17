@@ -4,7 +4,7 @@
 const CONFIG = {
   WEBHOOK_URL:   'https://christian-rojas.app.n8n.cloud/webhook/microlearning-generate',
   SUPABASE_URL:  'https://jzovrgpjgwlyxpwfhefg.supabase.co',
-  SUPABASE_ANON: 'YOUR_SUPABASE_ANON_KEY_HERE',
+  SUPABASE_ANON: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6b3ZyZ3BqZ3dseXhwd2ZoZWZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MzMxMjYsImV4cCI6MjA5NzIwOTEyNn0.EK5AsxvzZ25u5luUCVwA3_LbcWcuZ-hlGM38HVR-BZc',
 };
 
 /* ============================================================
