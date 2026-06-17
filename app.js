@@ -369,8 +369,7 @@ $('scriptForm').addEventListener('submit', async (e) => {
     const record = Array.isArray(result) ? result[0] : result;
 
     try {
-      const raw = record.script_content;
-      const scriptData = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      const scriptData = parseScriptContent(record.script_content);
       renderOutput(scriptData, record, elapsed);
       hide('progressSection');
       show('outputSection');
@@ -398,6 +397,26 @@ $('scriptForm').addEventListener('submit', async (e) => {
     submitBtn.textContent = t('form.submit');
   }
 });
+
+/* ============================================================
+   PARSE SCRIPT CONTENT — handles Base64 or plain JSON string
+   ============================================================ */
+function parseScriptContent(raw) {
+  if (!raw) throw new Error('Empty script_content');
+  if (typeof raw !== 'string') return raw;
+
+  // Detect Base64: only contains valid Base64 chars and no JSON structure
+  const isBase64 = /^[A-Za-z0-9+/]+=*$/.test(raw.trim()) && !raw.trim().startsWith('{');
+  if (isBase64) {
+    try {
+      const decoded = atob(raw.trim());
+      return JSON.parse(decoded);
+    } catch {
+      // Fall through to plain JSON parse
+    }
+  }
+  return JSON.parse(raw);
+}
 
 /* ============================================================
    RENDER OUTPUT
@@ -449,7 +468,7 @@ async function loadLatestScript() {
   if (!records.length) throw new Error('No completed records found');
 
   const record = records[0];
-  const scriptData = JSON.parse(record.script_content);
+  const scriptData = parseScriptContent(record.script_content);
 
   renderOutput(scriptData, record, null);
   hide('progressSection');
@@ -488,7 +507,7 @@ async function loadGallery() {
     grid.innerHTML = '';
     records.forEach(record => {
       let sd = {};
-      try { sd = JSON.parse(record.script_content || '{}'); } catch { /**/ }
+      try { sd = parseScriptContent(record.script_content || '{}'); } catch { /**/ }
 
       const title   = sd.preview_title   || record.topic || 'Untitled';
       const summary = sd.preview_summary || '';
