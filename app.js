@@ -4,7 +4,7 @@
 const CONFIG = {
   WEBHOOK_URL:   'https://christian-rojas.app.n8n.cloud/webhook/microlearning-generate',
   SUPABASE_URL:  'https://jzovrgpjgwlyxpwfhefg.supabase.co',
-  SUPABASE_ANON: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6b3ZyZ3BqZ3dseXhwd2ZoZWZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MzMxMjYsImV4cCI6MjA5NzIwOTEyNn0.EK5AsxvzZ25u5luUCVwA3_LbcWcuZ-hlGM38HVR-BZc',
+  SUPABASE_ANON: 'YOUR_SUPABASE_ANON_KEY_HERE',
 };
 
 /* ============================================================
@@ -365,27 +365,34 @@ $('scriptForm').addEventListener('submit', async (e) => {
     activateStep(4);
     await delay(600);
 
-    let scriptData;
-    try {
-      scriptData = typeof result.script_content === 'string'
-        ? JSON.parse(result.script_content)
-        : result.script_content;
-    } catch {
-      throw new Error('Could not parse script content.');
-    }
+    // Normalize — webhook may return object or array
+    const record = Array.isArray(result) ? result[0] : result;
 
-    renderOutput(scriptData, result, elapsed);
-    hide('progressSection');
-    show('outputSection');
-    scrollToSection('outputSection');
-    loadGallery();
+    try {
+      const raw = record.script_content;
+      const scriptData = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      renderOutput(scriptData, record, elapsed);
+      hide('progressSection');
+      show('outputSection');
+      scrollToSection('outputSection');
+      loadGallery();
+    } catch (parseErr) {
+      // Script saved in Supabase but frontend parse failed — load from DB
+      console.warn('Webhook response parse error, loading from Supabase:', parseErr);
+      await loadLatestScript();
+    }
 
   } catch (err) {
     stopTimer();
     console.error(err);
-    hide('progressSection');
-    show('formSection');
-    alert(`${t('form.errorMsg')}\n${err.message}`);
+    // Network or HTTP error — still try Supabase in case script was saved
+    try {
+      await loadLatestScript();
+    } catch {
+      hide('progressSection');
+      show('formSection');
+      alert(`${t('form.errorMsg')}\n${err.message}`);
+    }
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = t('form.submit');
@@ -420,6 +427,35 @@ function renderOutput(scriptData, record, elapsed) {
     `;
     grid.appendChild(div);
   });
+}
+
+/* ============================================================
+   LOAD LATEST SCRIPT (fallback when webhook response fails to parse)
+   ============================================================ */
+async function loadLatestScript() {
+  const res = await fetch(
+    `${CONFIG.SUPABASE_URL}/rest/v1/script_generations?status=eq.completed&order=created_at.desc&limit=1`,
+    {
+      headers: {
+        'apikey': CONFIG.SUPABASE_ANON,
+        'Authorization': `Bearer ${CONFIG.SUPABASE_ANON}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  if (!res.ok) throw new Error(`Supabase ${res.status}`);
+  const records = await res.json();
+  if (!records.length) throw new Error('No completed records found');
+
+  const record = records[0];
+  const scriptData = JSON.parse(record.script_content);
+
+  renderOutput(scriptData, record, null);
+  hide('progressSection');
+  show('outputSection');
+  scrollToSection('outputSection');
+  loadGallery();
 }
 
 /* ============================================================
